@@ -194,4 +194,4 @@ def compress(parser, token):
         asyncdefer = args[4]
     else:
         asyncdefer = None
-    return CompressorNode(nodelist, kind, mode, name, asycdefer)
+    return CompressorNode(nodelist, kind, mode, name, asyncdefer)
