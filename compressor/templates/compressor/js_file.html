@@ -1,1 +1,6 @@
+{% if compressed.asyncdefer %}
+<script type="text/javascript" src="{{ compressed.url }}"{{ compressed.extra }}{{ compressed.asyncdefer }}></script>
+{% else %}
 <script type="text/javascript" src="{{ compressed.url }}"{{ compressed.extra }}></script>
+{% endif %}
+

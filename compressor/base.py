@@ -44,6 +44,7 @@ class Compressor(object):
         self.precompiler_mimetypes = dict(settings.COMPRESS_PRECOMPILERS)
         self.finders = staticfiles.finders
         self._storage = None
+        self.asyncdefer = kwargs['asyncdefer']
 
     @cached_property
     def storage(self):
@@ -318,7 +319,7 @@ class Compressor(object):
         if not self.storage.exists(new_filepath) or forced:
             self.storage.save(new_filepath, ContentFile(content.encode(self.charset)))
         url = mark_safe(self.storage.url(new_filepath))
-        return self.render_output(mode, {"url": url})
+        return self.render_output(mode, {"url": url, "asyncdefer": self.asyncdefer})
 
     def output_inline(self, mode, content, forced=False, basename=None):
         """

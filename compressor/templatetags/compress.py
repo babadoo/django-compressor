@@ -100,7 +100,7 @@ class CompressorMixin(object):
             if cache_content is not None:
                 return cache_content
 
-        rendered_output = compressor.output(mode, forced=forced)
+        rendered_output = compressor.output(mode, forced=forced, asyncdefer=self.asyncdefer)
         assert isinstance(rendered_output, six.string_types)
         if cache_key:
             cache_set(cache_key, rendered_output)
@@ -109,11 +109,12 @@ class CompressorMixin(object):
 
 class CompressorNode(CompressorMixin, template.Node):
 
-    def __init__(self, nodelist, kind=None, mode=OUTPUT_FILE, name=None):
+    def __init__(self, nodelist, kind=None, mode=OUTPUT_FILE, name=None, asyncdefer=None):
         self.nodelist = nodelist
         self.kind = kind
         self.mode = mode
         self.name = name
+        self.asyncdefer = asyncdefer
 
     def get_original_content(self, context):
         return self.nodelist.render(context)
@@ -171,9 +172,9 @@ def compress(parser, token):
 
     args = token.split_contents()
 
-    if not len(args) in (2, 3, 4):
+    if not len(args) in (2, 3, 4, 5):
         raise template.TemplateSyntaxError(
-            "%r tag requires either one, two or three arguments." % args[0])
+            "%r tag requires either one, two, three or four arguments." % args[0])
 
     kind = args[1]
 
@@ -189,4 +190,8 @@ def compress(parser, token):
         name = args[3]
     else:
         name = None
-    return CompressorNode(nodelist, kind, mode, name)
+    if len(args) == 5:
+        asyncdefer = args[4]
+    else:
+        asyncdefer = None
+    return CompressorNode(nodelist, kind, mode, name, asycdefer)
